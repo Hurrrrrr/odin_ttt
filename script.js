@@ -1,7 +1,11 @@
 "use strict";
 
 const gameboard = (() => {
-    let myBoard = [1, 2, 3, 4, 5, 6, 7, 8, 9];       // the gameboard. 0 index this??
+    // the gameboard, layout:
+    // 1 | 2 | 3
+    // 4 | 5 | 6
+    // 7 | 8 | 9
+    let myBoard = [1, 2, 3, 4, 5, 6, 7, 8, 9];       
 
     const myBoxes = document.querySelectorAll("div.board-box");
 
@@ -12,31 +16,51 @@ const gameboard = (() => {
     }
 
     const boxClick = (box, board) => {
-        checkPlay(box, board);
-        // if checkPlay true:
-        markPlay(box, board);
+        
+        // if play is illegal, do nothing
+        if (!checkPlay(box, board)) {
+            return 0;
+        }
+
+        markPlay(box);
+
         if (checkWin(board)) {
             playGame.endGame();
         }
-        // playGame.checkDraw();
-            // check draw
-            // inc turn counter (if player 1's turn)
-            // change whose turn it is
+
+        playGame.checkDraw()
+
+        playGame.nextTurn();
     }
 
+    // Return true if the play is on an empty box
+    // -1 in checkPlay and markPlay is to compensate for 1-indexed board
     const checkPlay = (box, board) => {
-        if ((board[parseInt(box.dataset.index)] > 0) && (board[parseInt(box.dataset.index)] < 10)) {
-            console.log("legal");
+        // Avoid NaN typeof = "number" with this weird logic
+        if ((board[parseInt(box.dataset.index) - 1] > 0) &&     
+            (board[parseInt(box.dataset.index) - 1] < 10)) {
+            return true;
         } else {
-            console.log("illegal");
+            return false;
         }
     }
 
     const markPlay = (box) => {
-        myBoard[parseInt(box.dataset.index)] = bob.getPiece();     // bob is test value, replace with player in future
-        box.innerText = myBoard[parseInt(box.dataset.index)];
+        let turn = playGame.getTurn();
+        if (turn === 1) {
+            myBoard[parseInt(box.dataset.index) - 1] = player1.getPiece();
+            console.log("p1")
+        }
+
+        if (turn === 2) {
+            myBoard[parseInt(box.dataset.index) - 1] = player2.getPiece();
+            console.log("p2");
+        }
+
+        box.innerText = myBoard[parseInt(box.dataset.index) - 1];
     }
 
+    // Careful if the board array is changed to all 0/null, this won't work
     const checkWin = (board) => {
 
         // Horizontal win conditions
@@ -78,8 +102,8 @@ const gameboard = (() => {
 
 const playGame = ((board, player1, player2, turn) => {
 
-    let whoseTurn = 0;     // 1 = p1's turn, 2 = p2's turn
-    let turncount = 0;
+    let whoseTurn = 1;     // 1 = p1's turn, 2 = p2's turn
+    let turncount = 1;
 
     const initGame = (board, player1, player2, turn) => {
         gameboard.initBoxes();
@@ -95,40 +119,58 @@ const playGame = ((board, player1, player2, turn) => {
         turn = 1;
     }
 
-    // const checkTurn = (turn) => {
-    //     if (turn = 1) {
-    //         return true;
-    //     } else if (turn = 2) {
-    //         return false;
-    //     } else {
-    //         alert("Turnstate error");
-    //         return false;
-    //     }
-    // }
-
-    const checkDraw = (turn) => {
-        if (turn >= 9) {
-            return true;
+    const checkDraw = () => {
+        if (turncount >= 9) {
+            tieGame();
         } else {
-            return false;
+            return 0;
         }
     }
 
-    const playGame = () => {
-        // check win
-
-        // check draw
-        // inc turn counter (if player 1's turn)
-        // change whose turn it is
-    }
-
     const endGame = () => {
-        console.log("win!");
+        if (whoseTurn === 1) {
+            console.log("player 1 wins!");
+        } else if (whoseTurn = 2) {
+            console.log("player 2 wins!");
+        } else {
+            console.log("endgame error");
+        }
     }
 
-    // playTurn
+    const tieGame = () => {
+        console.log("cats game");
+    }
 
-    return {initGame, endGame};
+    const nextTurn = () => {
+        if (whoseTurn === 1) {
+            whoseTurn = 2;
+            turncount++;
+            return 0;
+        }
+
+        if (whoseTurn === 2) {
+            whoseTurn = 1;
+            turncount++;
+            return 0;
+        }
+
+        console.log("nextturn error");
+        return 1;
+    }
+
+    const getTurn = () => {
+        if (whoseTurn === 1) {
+            return 1;
+        }
+
+        if (whoseTurn === 2) {
+            return 2;
+        }
+
+        return -1;
+    }
+
+    return {initGame, endGame, tieGame, checkDraw, nextTurn, getTurn};
 })();
 
 const renderBoard = ((board, boxes) => {
@@ -148,7 +190,7 @@ const playerFactory = (name, piece) => {
 
 renderBoard.populateBoard(gameboard.myBoard, gameboard.myBoxes);
 
-let alice = playerFactory("Alice", "x");
-let bob = playerFactory("Bob", "o");
+let player1 = playerFactory("Alice", "x");
+let player2 = playerFactory("Bob", "o");
 
 gameboard.initBoxes();
