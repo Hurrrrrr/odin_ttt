@@ -1,38 +1,40 @@
 "use strict";
 
 const gameboard = (() => {
-    let myGrid = [1, 2, 3, 4, 5, 6, 7, 8, 9];       // the gameboard
+    let myBoard = [1, 2, 3, 4, 5, 6, 7, 8, 9];       // the gameboard. 0 index this??
 
     const myBoxes = document.querySelectorAll("div.board-box");
 
     const initBoxes = () => {
         myBoxes.forEach(box => {
-            box.addEventListener("click", () => boxClick(box, myGrid))
+            box.addEventListener("click", () => boxClick(box, myBoard))
         })
     }
 
-    const boxClick = (box, grid) => {
-        checkPlay(box, grid);
+    const boxClick = (box, board) => {
+        checkPlay(box, board);
         // if checkPlay true:
-        markPlay(box, grid);
-        checkWin(board)
-            // check win
+        markPlay(box, board);
+        if (checkWin(board)) {
+            playGame.endGame();
+        }
+        // playGame.checkDraw();
             // check draw
             // inc turn counter (if player 1's turn)
             // change whose turn it is
     }
 
-    const checkPlay = (box, grid) => {
-        if (typeof grid[parseInt(box.dataset)] === "number") {
+    const checkPlay = (box, board) => {
+        if ((board[parseInt(box.dataset.index)] > 0) && (board[parseInt(box.dataset.index)] < 10)) {
             console.log("legal");
         } else {
             console.log("illegal");
         }
     }
 
-    const markPlay = (box, grid) => {
-        grid[box.dataset] = bob.getPiece();     // bob is test value, replace with player in future
-        box.innerText = grid[box.dataset];
+    const markPlay = (box) => {
+        myBoard[parseInt(box.dataset.index)] = bob.getPiece();     // bob is test value, replace with player in future
+        box.innerText = myBoard[parseInt(box.dataset.index)];
     }
 
     const checkWin = (board) => {
@@ -71,7 +73,7 @@ const gameboard = (() => {
         return false;
     }
 
-    return {myGrid, myBoxes, initBoxes};
+    return {myBoard, myBoxes, initBoxes, boxClick};
 })();
 
 const playGame = ((board, player1, player2, turn) => {
@@ -93,13 +95,21 @@ const playGame = ((board, player1, player2, turn) => {
         turn = 1;
     }
 
-    const checkTurn = (turn) => {
-        if (turn = 1) {
+    // const checkTurn = (turn) => {
+    //     if (turn = 1) {
+    //         return true;
+    //     } else if (turn = 2) {
+    //         return false;
+    //     } else {
+    //         alert("Turnstate error");
+    //         return false;
+    //     }
+    // }
+
+    const checkDraw = (turn) => {
+        if (turn >= 9) {
             return true;
-        } else if (turn = 2) {
-            return false;
         } else {
-            alert("Turnstate error");
             return false;
         }
     }
@@ -112,17 +122,19 @@ const playGame = ((board, player1, player2, turn) => {
         // change whose turn it is
     }
 
-
+    const endGame = () => {
+        console.log("win!");
+    }
 
     // playTurn
 
-    return {initGame};
+    return {initGame, endGame};
 })();
 
-const renderBoard = ((grid, boxes) => {
-    const populateBoard = (grid, boxes) => {
-        for (let i = 0; i < grid.length; i++) {
-            boxes[i].innerText = grid[i];
+const renderBoard = ((board, boxes) => {
+    const populateBoard = (board, boxes) => {
+        for (let i = 0; i < board.length; i++) {
+            boxes[i].innerText = board[i];
         }
     }
     return {populateBoard};
@@ -134,7 +146,7 @@ const playerFactory = (name, piece) => {
     return {getName, getPiece};
 }
 
-renderBoard.populateBoard(gameboard.myGrid, gameboard.myBoxes);
+renderBoard.populateBoard(gameboard.myBoard, gameboard.myBoxes);
 
 let alice = playerFactory("Alice", "x");
 let bob = playerFactory("Bob", "o");
