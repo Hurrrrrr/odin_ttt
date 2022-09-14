@@ -105,9 +105,16 @@ const playGame = ((board, player1, player2, turn) => {
     let whoseTurn = 1;     // 1 = p1's turn, 2 = p2's turn
     let turncount = 1;
 
-    const initGame = (board, player1, player2, turn) => {
-        gameboard.initBoxes();
-        resetGame(board, player1, player2, turn);
+    const initGame = () => {
+        // gameboard.initBoxes();
+        // resetGame();
+        const startButton = document.getElementById("start-button");
+        startButton.addEventListener("click", initPlayers);
+    }
+
+    const initPlayers = () => {
+        let p1 = prompt("p1");
+        let p2 = prompt("p2");
     }
 
     const resetGame = (board, player1, player2, turn) => {
@@ -173,14 +180,15 @@ const playGame = ((board, player1, player2, turn) => {
     return {initGame, endGame, tieGame, checkDraw, nextTurn, getTurn};
 })();
 
-const renderBoard = ((board, boxes) => {
-    const populateBoard = (board, boxes) => {
-        for (let i = 0; i < board.length; i++) {
-            boxes[i].innerText = board[i];
-        }
-    }
-    return {populateBoard};
-})();
+// Is this actually necessary?
+// const renderBoard = ((board, boxes) => {
+//     const populateBoard = (board, boxes) => {
+//         for (let i = 0; i < board.length; i++) {
+//             boxes[i].innerText = board[i];
+//         }
+//     }
+//     return {populateBoard};
+// })();
 
 const playerFactory = (name, piece) => {
     const getName = () => name;
@@ -188,9 +196,10 @@ const playerFactory = (name, piece) => {
     return {getName, getPiece};
 }
 
-renderBoard.populateBoard(gameboard.myBoard, gameboard.myBoxes);
+// renderBoard.populateBoard(gameboard.myBoard, gameboard.myBoxes);
 
-let player1 = playerFactory("Alice", "x");
-let player2 = playerFactory("Bob", "o");
+let player1 = playerFactory("", "x");
+let player2 = playerFactory("", "o");
 
 gameboard.initBoxes();
+
