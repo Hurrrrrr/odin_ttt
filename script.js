@@ -8,6 +8,12 @@ const gameboard = (() => {
     let myBoard = [1, 2, 3, 4, 5, 6, 7, 8, 9];       
 
     const myBoxes = document.querySelectorAll("div.board-box");
+    const startButton = document.getElementById("start-button");
+
+
+    const initButton = () => {
+        startButton.addEventListener("click", () => console.log("Start"));
+    }
 
     const initBoxes = () => {
         myBoxes.forEach(box => {
@@ -97,8 +103,18 @@ const gameboard = (() => {
         return false;
     }
 
-    return {myBoard, myBoxes, initBoxes, boxClick};
+    const resetGame = (board) => {
+        board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        player1.name = "";
+        player2.name = "";
+        playGame.turncount = 1;
+        console.log("Reset");
+    }
+
+    return {myBoard, myBoxes, initBoxes, boxClick, initButton};
 })();
+
+
 
 const playGame = ((board, player1, player2, turn) => {
 
@@ -115,15 +131,6 @@ const playGame = ((board, player1, player2, turn) => {
     const initPlayers = () => {
         let p1 = prompt("p1");
         let p2 = prompt("p2");
-    }
-
-    const resetGame = (board, player1, player2, turn) => {
-        board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        player1.name = "";
-        player2.name = "";
-        player1.piece = "";
-        player2.piece = "";
-        turn = 1;
     }
 
     const checkDraw = () => {
@@ -177,7 +184,7 @@ const playGame = ((board, player1, player2, turn) => {
         return -1;
     }
 
-    return {initGame, endGame, tieGame, checkDraw, nextTurn, getTurn};
+    return {initGame, endGame, tieGame, checkDraw, nextTurn, getTurn, turncount};
 })();
 
 // Is this actually necessary?
@@ -202,4 +209,4 @@ let player1 = playerFactory("", "x");
 let player2 = playerFactory("", "o");
 
 gameboard.initBoxes();
-
+gameboard.initButton();
