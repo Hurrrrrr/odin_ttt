@@ -1,18 +1,37 @@
 "use strict";
 
+const playerFactory = (name, piece) => {
+    return {name, piece};
+}
+
 const gameboard = (() => {
     // the gameboard, layout:
     // 1 | 2 | 3
     // 4 | 5 | 6
     // 7 | 8 | 9
-    let myBoard = [1, 2, 3, 4, 5, 6, 7, 8, 9];       
+    let myBoard = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    let player1 = playerFactory("", "x");
+    let player2 = playerFactory("", "o");
 
     const myBoxes = document.querySelectorAll("div.board-box");
     const startButton = document.getElementById("start-button");
+    // let player1 = playerFactory()
 
 
     const initButton = () => {
-        startButton.addEventListener("click", () => console.log("Start"));
+        startButton.addEventListener("click", () => startClick());
+    }
+
+    const startClick = () => {
+        resetBoard();
+        initPlayers();
+    }
+
+    const initPlayers = () => {
+        let p1Name = prompt("enter p1 name");
+        let p2Name = prompt("enter p2 name");
+        player1.name = p1Name;
+        player2.name = p2Name;
     }
 
     const initBoxes = () => {
@@ -23,6 +42,11 @@ const gameboard = (() => {
 
     const boxClick = (box, board) => {
         
+        // if game is not in progress, do nothing
+        if (!playGame.allowPlay()) {
+            return 0;
+        }
+
         // if play is illegal, do nothing
         if (!checkPlay(box, board)) {
             return 0;
@@ -54,12 +78,12 @@ const gameboard = (() => {
     const markPlay = (box) => {
         let turn = playGame.getTurn();
         if (turn === 1) {
-            myBoard[parseInt(box.dataset.index) - 1] = player1.getPiece();
+            myBoard[parseInt(box.dataset.index) - 1] = player1.piece;
             console.log("p1")
         }
 
         if (turn === 2) {
-            myBoard[parseInt(box.dataset.index) - 1] = player2.getPiece();
+            myBoard[parseInt(box.dataset.index) - 1] = player2.piece;
             console.log("p2");
         }
 
@@ -103,12 +127,15 @@ const gameboard = (() => {
         return false;
     }
 
-    const resetGame = (board) => {
-        board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        player1.name = "";
-        player2.name = "";
-        playGame.turncount = 1;
-        console.log("Reset");
+    const resetBoard = () => {
+        myBoard = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        myBoxes.forEach((box) => {
+            box.innerText = "";
+        });
+        // todo: get players reset
+        // player1.name = "";
+        // player2.name = "";
+        playGame.resetGame();
     }
 
     return {myBoard, myBoxes, initBoxes, boxClick, initButton};
@@ -120,21 +147,25 @@ const playGame = ((board, player1, player2, turn) => {
 
     let whoseTurn = 1;     // 1 = p1's turn, 2 = p2's turn
     let turncount = 1;
+    let canPlay = false;
 
-    const initGame = () => {
-        // gameboard.initBoxes();
-        // resetGame();
-        const startButton = document.getElementById("start-button");
-        startButton.addEventListener("click", initPlayers);
+    const resetGame = () => {
+        whoseTurn = 1;
+        turncount = 1;
+        canPlay = true;
     }
 
-    const initPlayers = () => {
-        let p1 = prompt("p1");
-        let p2 = prompt("p2");
+    const allowPlay = () => {
+        if (canPlay) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     const checkDraw = () => {
         if (turncount >= 9) {
+            canPlay = false;
             tieGame();
         } else {
             return 0;
@@ -142,6 +173,7 @@ const playGame = ((board, player1, player2, turn) => {
     }
 
     const endGame = () => {
+        canPlay = false;
         if (whoseTurn === 1) {
             console.log("player 1 wins!");
         } else if (whoseTurn = 2) {
@@ -152,6 +184,7 @@ const playGame = ((board, player1, player2, turn) => {
     }
 
     const tieGame = () => {
+        canPlay = false;
         console.log("cats game");
     }
 
@@ -184,7 +217,7 @@ const playGame = ((board, player1, player2, turn) => {
         return -1;
     }
 
-    return {initGame, endGame, tieGame, checkDraw, nextTurn, getTurn, turncount};
+    return {endGame, tieGame, checkDraw, nextTurn, getTurn, resetGame, allowPlay};
 })();
 
 // Is this actually necessary?
@@ -197,16 +230,10 @@ const playGame = ((board, player1, player2, turn) => {
 //     return {populateBoard};
 // })();
 
-const playerFactory = (name, piece) => {
-    const getName = () => name;
-    const getPiece = () => piece;
-    return {getName, getPiece};
-}
-
 // renderBoard.populateBoard(gameboard.myBoard, gameboard.myBoxes);
 
-let player1 = playerFactory("", "x");
-let player2 = playerFactory("", "o");
+// let player1 = playerFactory("", "x");
+// let player2 = playerFactory("", "o");
 
 gameboard.initBoxes();
 gameboard.initButton();
