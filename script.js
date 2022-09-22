@@ -15,8 +15,6 @@ const gameboard = (() => {
 
     const myBoxes = document.querySelectorAll("div.board-box");
     const startButton = document.getElementById("start-button");
-    // let player1 = playerFactory()
-
 
     const initButton = () => {
         startButton.addEventListener("click", () => startClick());
@@ -55,7 +53,13 @@ const gameboard = (() => {
         markPlay(box);
 
         if (checkWin(board)) {
-            playGame.endGame();
+            let winner = playGame.endGame();
+
+            if (winner === 1) {
+                console.log(`${player1.name} wins!`);
+            } else if (winner === 2) {
+                console.log(`${player2.name} wins!`);
+            }
         }
 
         playGame.checkDraw()
@@ -90,7 +94,6 @@ const gameboard = (() => {
         box.innerText = myBoard[parseInt(box.dataset.index) - 1];
     }
 
-    // Careful if the board array is changed to all 0/null, this won't work
     const checkWin = (board) => {
 
         // Horizontal win conditions
@@ -132,9 +135,7 @@ const gameboard = (() => {
         myBoxes.forEach((box) => {
             box.innerText = "";
         });
-        // todo: get players reset
-        // player1.name = "";
-        // player2.name = "";
+
         playGame.resetGame();
     }
 
@@ -174,18 +175,21 @@ const playGame = ((board, player1, player2, turn) => {
 
     const endGame = () => {
         canPlay = false;
+        // P1 wins
         if (whoseTurn === 1) {
-            console.log("player 1 wins!");
+            return 1;
+        // P2 wins
         } else if (whoseTurn = 2) {
-            console.log("player 2 wins!");
+            return 2;
         } else {
             console.log("endgame error");
+            return -1;
         }
     }
 
     const tieGame = () => {
         canPlay = false;
-        console.log("cats game");
+        console.log("Cat's game, no one wins.");
     }
 
     const nextTurn = () => {
