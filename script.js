@@ -139,12 +139,12 @@ const gameboard = (() => {
         playGame.resetGame();
     }
 
-    return {myBoard, myBoxes, initBoxes, boxClick, initButton};
+    return {initBoxes, initButton};
 })();
 
 
 
-const playGame = ((board, player1, player2, turn) => {
+const playGame = (() => {
 
     let whoseTurn = 1;     // 1 = p1's turn, 2 = p2's turn
     let turncount = 1;
@@ -221,7 +221,7 @@ const playGame = ((board, player1, player2, turn) => {
         return -1;
     }
 
-    return {endGame, tieGame, checkDraw, nextTurn, getTurn, resetGame, allowPlay};
+    return {allowPlay, endGame, checkDraw, endGame, getTurn, resetGame, nextTurn};
 })();
 
 // Is this actually necessary?
